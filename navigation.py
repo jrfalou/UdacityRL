@@ -23,10 +23,13 @@ if __name__ == "__main__":
     env = None
     try:
         if args.mode == 'test':
+            params_file = open(args.test_params, 'r')
+            test_params = json.loads(params_file.read())
+            params_file.close()
+
             env = UnityEnvironment(file_name="./Banana_Windows_x86_64/Banana.exe")
-            agent_trainer = AgentTrainer(env=env, params=args.test_params[0])
+            agent_trainer = AgentTrainer(env=env, params=test_params[0])
             agent_trainer.test(model_weights=args.test_model)
-            env.close()
         elif args.mode == 'train':
             params_file = open(args.train_params, 'r')
             training_params = json.loads(params_file.read())

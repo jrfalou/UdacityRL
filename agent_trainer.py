@@ -145,6 +145,7 @@ class AgentTrainer:
         score = 0
         
         if model_weights != '':
+            print('Load model weights', './ModelWeights/' + model_weights + '.pth')
             self.agent.qnetwork_local.load_state_dict(torch.load('./ModelWeights/' + model_weights + '.pth'))
 
         while True:
