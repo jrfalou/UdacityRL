@@ -13,10 +13,10 @@ The content of this repository is heavily dependent on the below git repos:
 - Unity (add link)
 
 ## Installation
-conda create --name myuda python=3.6
-activate myuda
-pip install unityagents
-conda install -c pytorch pytorch
+conda create --name myuda python=3.6  
+activate myuda  
+pip install unityagents  
+conda install -c pytorch pytorch  
 
 ## DQN algo
 ### Setup the training environment

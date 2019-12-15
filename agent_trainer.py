@@ -123,7 +123,7 @@ class AgentTrainer:
             #if the environment was solved, save the agent model weights
             if np.mean(scores_window) >= self.trainer_params['max_score']:
                 print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)))
-                torch.save(self.agent.qnetwork_local.state_dict(), self.agent_params['model_tag'] + '.pth')
+                torch.save(self.agent.qnetwork_local.state_dict(), './ModelWeights/' + self.agent_params['model_tag'] + '.pth')
                 self.write_score_to_file(i_episode=i_episode, mean_score=np.mean(scores_window))
                 break
             elif total_worse_count == self.trainer_params['max_total_worse'] or consecutive_worse_count == self.trainer_params['max_consec_worse']:
@@ -145,7 +145,7 @@ class AgentTrainer:
         score = 0
         
         if model_weights != '':
-            self.agent.qnetwork_local.load_state_dict(torch.load(model_weights + '.pth'))
+            self.agent.qnetwork_local.load_state_dict(torch.load('./ModelWeights/' + model_weights + '.pth'))
 
         while True:
             if model_weights=='random':
