@@ -7,49 +7,18 @@ import torch
 import argparse
 import json
 import sys
+import time
 
 #internal imports
 from dqn_agent import Agent
 
-default_params = {
-    "id": 0, 
-    "training": {
-        "n_episodes": 1000, 
-        "max_t": 1000, 
-        "max_score": 14, 
-        "eps_start": 1.0, 
-        "eps_end": 0.01, 
-        "eps_decay": 0.994, 
-        "max_consec_worse": 10, 
-        "max_total_worse": 10
-    }, 
-    "agent": {
-        "nn_layers": [64, 64, 64], 
-        "memory_prio_params": {
-            "memory_prio_enabled": False, 
-            "memory_prio_a": 0,
-            "memory_prio_b0": 0, 
-            "memory_prio_b_step": 0
-        }, 
-        "double_dqn": False, 
-        "step_reward": 0, 
-        "debug_mode": False, 
-        "soft_tau": 0.001, 
-        "learning_rate": 0.0005, 
-        "model_tag": "simple_[64, 64, 64]_0.994"
-    }
-}
+def train_agent(env, params, results_path=''):
+    #Params
+    #======
+    # env (UnityEnvironment): unity environment to interact with
+    # params (dictionary): format can be found in the ./default_params.json file
+    # results_path (string): file path to output training results
 
-#     Params
-#     ======
-#         n_episodes (int): maximum number of training episodes
-#         max_t (int): maximum number of timesteps per episode
-#         eps_start (float): starting value of epsilon, for epsilon-greedy action selection
-#         eps_end (float): minimum value of epsilon
-#         eps_decay (float): multiplicative factor (per episode) for decreasing epsilon
-#     """
-
-def train_agent(env, params): #, results_file):
     #Environments contain brains which are responsible for deciding the actions of their 
     # associated agents. Here we check for the first brain available, and set it as the default 
     # brain we will be controlling from Python.
@@ -138,7 +107,7 @@ def train_agent(env, params): #, results_file):
 
             prev_scores_window_avg = np.mean(scores_window)
             print('\rEpisode {}\tAverage Score: {:.2f}\teps: {:.5f}'.format(i_episode, np.mean(scores_window), eps))
-            results_file = open('results.csv', 'a')
+            results_file = open(results_path, 'a')
             results_file.write(','.join([str(params['id']), params['agent']['model_tag'].replace(',', ';'), str(i_episode), str(np.mean(scores_window))]) + '\n')
             results_file.close()
 
@@ -147,15 +116,15 @@ def train_agent(env, params): #, results_file):
         if np.mean(scores_window)>=params['training']['max_score']:
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)))
             torch.save(agent.qnetwork_local.state_dict(), params['agent']['model_tag'] + '.pth')
+            results_file = open(results_path, 'a')
+            results_file.write(','.join([str(params['id']), params['agent']['model_tag'].replace(',', ';'), str(i_episode), str(np.mean(scores_window))]) + '\n')
+            results_file.close()
             break
         elif total_worse_count == params['training']['max_total_worse'] or consecutive_worse_count == params['training']['max_consec_worse']:
             print('\nEnvironment failed in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)))
             break
 
-    #close environment
-    env.close()
-
-def test_agent(env, model='random'):
+def test_agent(env, params, model='random'):
     brain_name = env.brain_names[0]
     brain = env.brains[brain_name]
 
@@ -171,18 +140,18 @@ def test_agent(env, model='random'):
         agent = Agent(
             state_size=state_size, 
             action_size=action_size,
-            layers_params=default_params['agent']['nn_layers'],
-            double_dqn=default_params['agent']['double_dqn'],
-            step_reward=default_params['agent']['step_reward'],
-            soft_tau=default_params['agent']['soft_tau'],
-            learning_rate=default_params['agent']['learning_rate'],
+            layers_params=params['agent']['nn_layers'],
+            double_dqn=params['agent']['double_dqn'],
+            step_reward=params['agent']['step_reward'],
+            soft_tau=params['agent']['soft_tau'],
+            learning_rate=params['agent']['learning_rate'],
             memory_prio_params=(
-                default_params['agent']['memory_prio_params']['memory_prio_enabled'],
-                default_params['agent']['memory_prio_params']['memory_prio_a'],
-                default_params['agent']['memory_prio_params']['memory_prio_b0'],
-                default_params['agent']['memory_prio_params']['memory_prio_b_step']
+                params['agent']['memory_prio_params']['memory_prio_enabled'],
+                params['agent']['memory_prio_params']['memory_prio_a'],
+                params['agent']['memory_prio_params']['memory_prio_b0'],
+                params['agent']['memory_prio_params']['memory_prio_b_step']
             ),
-            debug_mode=default_params['agent']['debug_mode'])
+            debug_mode=params['agent']['debug_mode'])
         agent.qnetwork_local.load_state_dict(torch.load(model + '.pth'))
 
     while True:
@@ -223,30 +192,37 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Parameters for navigation project')
     parser.add_argument('mode')
     parser.add_argument('--test_model', dest='test_model', default='random')
-    parser.add_argument('--train_params', dest='train_params', default='./training_params.json')
+    parser.add_argument('--test_params', dest='test_params', default='./default_params.json')
+    parser.add_argument('--train_params', dest='train_params', default='./default_params.json')
     parser.add_argument('--train_start_id', dest='train_start_id', default=0)
+    parser.add_argument('--train_results_path', dest='train_results_path', default='./results.csv')
     args = parser.parse_args()
     
     if args.mode == 'test':
         env = UnityEnvironment(file_name="./Banana_Windows_x86_64/Banana.exe")
-        test_agent(env, model=args.test_model)
+        test_agent(env, params=args.test_params[0], model=args.test_model)
+        env.close()
     elif args.mode == 'train':
         params_file = open(args.train_params, 'r')
         training_params = json.loads(params_file.read())
         params_file.close()
 
-        # results_file = open('results.csv', 'w')
-        # try:
-        for training_params in training_params['training_params']:
-            if(training_params['id'] < int(args.train_start_id)):
-                continue
-            print('Train model_id', training_params['id'])
-            
-            env = UnityEnvironment(file_name="./Banana_Windows_x86_64/Banana.exe")
-            train_agent(env, training_params) #, results_file)
-        # except :
-        #     print('Unexpected error:', sys.exc_info()[0])
-        # finally:
-        #     results_file.close()
+        try:
+            env = UnityEnvironment(
+                file_name="./Banana_Windows_x86_64/Banana.exe",
+                no_graphics=True
+            )
+            for training_params in training_params['training_params']:
+                if(training_params['id'] < int(args.train_start_id)):
+                    continue
+                print('Train model_id', training_params['id'])
+                
+                train_agent(env, training_params, args.train_results_path)
+        except Exception as e:
+            print('Unexpected error:', str(e))
+            raise(e)
+        finally:
+            env.close()
+            print('Training ended')
     else:
         print('Unknown mode', args.mode)
