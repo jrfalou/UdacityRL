@@ -20,7 +20,7 @@ conda install -c pytorch pytorch
 
 ## DQN algo
 ### Setup the training environment
-If not already done, follow the installation steps (add link)
+If not already done, follow the installation steps (add link) 
 ### Implementation and calibration
 ### Udacity Navigation project
 
