@@ -12,31 +12,32 @@ import sys
 from dqn_agent import Agent
 
 default_params = {
-    'model_tag':'simple_dqn',
-    'agent':{
-        'nn_layers':[64,64,64],
-        'memory_prio_params':(
-            False, #memory_prio_enabled
-            0., #memory_prio_a
-            0., #memory_prio_b0
-            0. #memory_prio_b_step
-        ),
-        'double_dqn':False, 
-        'step_reward':0.,
-        'debug_mode':False,
-        'soft_tau':1e-3,
-        'learning_rate':5e-4,
-    },
-    'training':{
-        'n_episodes':1000,
-        'max_t':1000,
-        'max_score':14,
-        'eps_start':1.,
-        'eps_end':0.01,
-        'eps_decay':0.995,
-        'max_consec_worse':3,
-        'max_total_worse':5,
-    },
+    "id": 0, 
+    "training": {
+        "n_episodes": 1000, 
+        "max_t": 1000, 
+        "max_score": 14, 
+        "eps_start": 1.0, 
+        "eps_end": 0.01, 
+        "eps_decay": 0.994, 
+        "max_consec_worse": 10, 
+        "max_total_worse": 10
+    }, 
+    "agent": {
+        "nn_layers": [64, 64, 64], 
+        "memory_prio_params": {
+            "memory_prio_enabled": False, 
+            "memory_prio_a": 0,
+            "memory_prio_b0": 0, 
+            "memory_prio_b_step": 0
+        }, 
+        "double_dqn": False, 
+        "step_reward": 0, 
+        "debug_mode": False, 
+        "soft_tau": 0.001, 
+        "learning_rate": 0.0005, 
+        "model_tag": "simple_[64, 64, 64]_0.994"
+    }
 }
 
 #     Params
@@ -48,7 +49,7 @@ default_params = {
 #         eps_decay (float): multiplicative factor (per episode) for decreasing epsilon
 #     """
 
-def train_agent(env, params, results_file):
+def train_agent(env, params): #, results_file):
     #Environments contain brains which are responsible for deciding the actions of their 
     # associated agents. Here we check for the first brain available, and set it as the default 
     # brain we will be controlling from Python.
@@ -137,13 +138,15 @@ def train_agent(env, params, results_file):
 
             prev_scores_window_avg = np.mean(scores_window)
             print('\rEpisode {}\tAverage Score: {:.2f}\teps: {:.5f}'.format(i_episode, np.mean(scores_window), eps))
-            results_file.write(','.join([params['model_tag'], str(i_episode), str(np.mean(scores_window))]))
+            results_file = open('results.csv', 'a')
+            results_file.write(','.join([str(params['id']), params['agent']['model_tag'].replace(',', ';'), str(i_episode), str(np.mean(scores_window))]) + '\n')
+            results_file.close()
 
         #test if agent solved the environment or failed
         #if the environment was solved, save the agent model weights
         if np.mean(scores_window)>=params['training']['max_score']:
             print('\nEnvironment solved in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)))
-            torch.save(agent.qnetwork_local.state_dict(), params['model_tag'] + '.pth')
+            torch.save(agent.qnetwork_local.state_dict(), params['agent']['model_tag'] + '.pth')
             break
         elif total_worse_count == params['training']['max_total_worse'] or consecutive_worse_count == params['training']['max_consec_worse']:
             print('\nEnvironment failed in {:d} episodes!\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)))
@@ -173,7 +176,12 @@ def test_agent(env, model='random'):
             step_reward=default_params['agent']['step_reward'],
             soft_tau=default_params['agent']['soft_tau'],
             learning_rate=default_params['agent']['learning_rate'],
-            memory_prio_params=default_params['agent']['memory_prio_params'],
+            memory_prio_params=(
+                default_params['agent']['memory_prio_params']['memory_prio_enabled'],
+                default_params['agent']['memory_prio_params']['memory_prio_a'],
+                default_params['agent']['memory_prio_params']['memory_prio_b0'],
+                default_params['agent']['memory_prio_params']['memory_prio_b_step']
+            ),
             debug_mode=default_params['agent']['debug_mode'])
         agent.qnetwork_local.load_state_dict(torch.load(model + '.pth'))
 
@@ -219,26 +227,26 @@ if __name__ == "__main__":
     parser.add_argument('--train_start_id', dest='train_start_id', default=0)
     args = parser.parse_args()
     
-    #Load the Banana Unity environment
-    env = UnityEnvironment(file_name="./Banana_Windows_x86_64/Banana.exe")
-
     if args.mode == 'test':
+        env = UnityEnvironment(file_name="./Banana_Windows_x86_64/Banana.exe")
         test_agent(env, model=args.test_model)
     elif args.mode == 'train':
         params_file = open(args.train_params, 'r')
         training_params = json.loads(params_file.read())
         params_file.close()
 
-        results_file = open('results.csv', 'w')
-        try:
-            for training_params in training_params['training_params']:
-                if(training_params['id'] < args.train_start_id):
-                    continue
-                print('Train model_id', training_params['id'])
-                train_agent(env, training_params, results_file)
-        except :
-            print('Unexpected error:', sys.exc_info()[0])
-        finally:
-            results_file.close()
+        # results_file = open('results.csv', 'w')
+        # try:
+        for training_params in training_params['training_params']:
+            if(training_params['id'] < int(args.train_start_id)):
+                continue
+            print('Train model_id', training_params['id'])
+            
+            env = UnityEnvironment(file_name="./Banana_Windows_x86_64/Banana.exe")
+            train_agent(env, training_params) #, results_file)
+        # except :
+        #     print('Unexpected error:', sys.exc_info()[0])
+        # finally:
+        #     results_file.close()
     else:
         print('Unknown mode', args.mode)
