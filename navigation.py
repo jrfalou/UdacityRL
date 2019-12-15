@@ -7,23 +7,7 @@ import json
 
 #local imports
 from agent_trainer import AgentTrainer
-    
-# def plot_scores(scores):
-    # import torch
-    # import numpy as np
-    # import matplotlib.pyplot as plt
-    # %matplotlib inline
-    # is_ipython = 'inline' in plt.get_backend()
-    # if is_ipython:
-    #     from IPython import display
-    # plt.ion()
-
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111)
-    # plt.plot(np.arange(len(scores)), scores)
-    # plt.ylabel('Score')
-    # plt.xlabel('Episode #')
-    # plt.show()
+from time_analysis import TimeAnalysis
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Parameters for navigation project')
@@ -33,6 +17,7 @@ if __name__ == "__main__":
     parser.add_argument('--train_params', dest='train_params', default='./default_params.json')
     parser.add_argument('--train_start_id', dest='train_start_id', default=0)
     parser.add_argument('--train_results_path', dest='train_results_path', default='./results.csv')
+    parser.add_argument('--train_debug', dest='train_debug', default=False)
     args = parser.parse_args()
     
     env = None
@@ -55,13 +40,16 @@ if __name__ == "__main__":
                 if(training_params['id'] < int(args.train_start_id)):
                     continue
 
+                time_analysis = TimeAnalysis()
                 agent_trainer = AgentTrainer(
                     env=env, 
                     params=training_params, 
-                    results_path=args.train_results_path
+                    results_path=args.train_results_path,
+                    debug_mode=args.train_debug,
+                    time_analysis=time_analysis
                 )
                 agent_trainer.train()
-
+                print(time_analysis.to_str())
             print('Training ended')
         else:
             print('Unknown mode', args.mode)

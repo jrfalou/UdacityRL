@@ -4,15 +4,20 @@ from collections import deque
 
 #internal imports
 from dqn_agent import Agent
+from time_analysis import TimeAnalysis
+from time_analysis import RunType
 
 class AgentTrainer:
-    # AgentTrainer:
-    # ======
-    # env (UnityEnvironment): unity environment to interact with
-    # params (dictionary): format can be found in the ./default_params.json file
-    # results_path (string): file path to output training results
-    # debug_mode (bool): enables debug mode logging
-    def __init__(self, env, params, results_path='', debug_mode=False):
+    '''
+    AgentTrainer:
+    ======
+    env (UnityEnvironment): unity environment to interact with
+    params (dictionary): format can be found in the ./default_params.json file
+    results_path (string): file path to output training results
+    debug_mode (bool): enables debug mode logging
+    time_analysis (TimeAnalysis): contains timers stats
+    '''
+    def __init__(self, env, params, results_path='', debug_mode=False, time_analysis=None):
         #Environments contain brains which are responsible for deciding the actions of their 
         # associated agents. Here we check for the first brain available, and set it as the default 
         # brain we will be controlling from Python.
@@ -23,6 +28,7 @@ class AgentTrainer:
         self.brain_name = self.env.brain_names[0]
         self.results_path = results_path
         self.debug_mode = debug_mode
+        self.time_analysis = time_analysis
         
         # reset the environment and print details
         env_info = self.env.reset(train_mode=True)[self.brain_name]
@@ -52,7 +58,8 @@ class AgentTrainer:
                 self.agent_params['memory_prio_params']['memory_prio_b0'],
                 self.agent_params['memory_prio_params']['memory_prio_b_step']
             ),
-            debug_mode=self.agent_params['debug_mode'])
+            debug_mode=self.agent_params['debug_mode'],
+            time_analysis=self.time_analysis)
 
     def train(self):
         print('Train model_id', self.trainer_id)
@@ -69,20 +76,23 @@ class AgentTrainer:
             #train agent with another episode
             score = 0
             for t in range(self.trainer_params['max_t']):
-                # total_step_t = datetime.datetime.now()
-                action = self.agent.act(state, eps).astype(int)
+                self.time_analysis.start_timer(RunType.training_step)
                 
-                # env_step_t = datetime.datetime.now()
+                self.time_analysis.start_timer(RunType.agent_act)
+                action = self.agent.act(state, eps).astype(int)
+                self.time_analysis.end_timer(RunType.agent_act)
+
+                self.time_analysis.start_timer(RunType.env_step)
                 env_info = self.env.step(action)[self.brain_name]
                 next_state = env_info.vector_observations[0]
                 reward = env_info.rewards[0]
                 done = env_info.local_done[0]
-                # agent.time_analysis.env_step.append(datetime.datetime.now()-env_step_t)
+                self.time_analysis.end_timer(RunType.env_step)
                 
                 self.agent.step(state, action, reward, next_state, done)
                 state = next_state
                 score += reward
-                # agent.time_analysis.total_step.append(datetime.datetime.now()-total_step_t)
+                self.time_analysis.end_timer(RunType.training_step)
                 if done:
                     break 
 
@@ -95,8 +105,8 @@ class AgentTrainer:
 
             #post-processing of latest 100 episodes        
             if i_episode % scores_window.maxlen == 0:
-                # agent.time_analysis.to_str()
-                # agent.time_analysis.reset()
+                if self.debug_mode:
+                    print('\n' + self.time_analysis.to_str())
                 
                 if i_episode > scores_window.maxlen:
                     if np.mean(scores_window) < prev_scores_window_avg:
@@ -153,3 +163,20 @@ class AgentTrainer:
                 break
                 
             print("\rScore: {}".format(score), end='')
+
+    # def plot_scores(scores):
+        # import torch
+        # import numpy as np
+        # import matplotlib.pyplot as plt
+        # %matplotlib inline
+        # is_ipython = 'inline' in plt.get_backend()
+        # if is_ipython:
+        #     from IPython import display
+        # plt.ion()
+
+        # fig = plt.figure()
+        # ax = fig.add_subplot(111)
+        # plt.plot(np.arange(len(scores)), scores)
+        # plt.ylabel('Score')
+        # plt.xlabel('Episode #')
+        # plt.show()

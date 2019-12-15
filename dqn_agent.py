@@ -6,10 +6,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import itertools
-
 from collections import OrderedDict
 
-import datetime
+from time_analysis import TimeAnalysis
+from time_analysis import RunType
 
 BUFFER_SIZE = int(1e5)  # replay buffer size
 BATCH_SIZE = 64         # minibatch size
@@ -40,69 +40,6 @@ def create_agent(state_size, action_size, layers_params):
 
     return nn.Sequential(nn_dict).to(device)
 
-class TimeAnalysis():
-    def __init__(self):
-        self.memory_add = []
-        self.memory_sample = []
-        self.memory_sample_random = []
-        self.memory_sample_states = []
-        self.memory_sample_actions = []
-        self.memory_sample_reward = []
-        self.memory_sample_next = []
-        self.memory_sample_done = []
-        self.act = []
-        self.learn = []
-        self.compute_q_targets = []
-        self.compute_q_expected = []
-        self.loss = []
-        self.backward = []
-        self.optimize = []
-        self.soft_update = []
-        self.env_step = []
-        self.total_step = []
-        
-    def reset(self):
-        self.memory_add.clear()
-        self.memory_sample.clear()
-        self.memory_sample_random.clear()
-        self.memory_sample_states.clear()
-        self.memory_sample_actions.clear()
-        self.memory_sample_reward.clear()
-        self.memory_sample_next.clear()
-        self.memory_sample_done.clear()
-        self.act.clear()
-        self.learn.clear()
-        self.compute_q_targets.clear()
-        self.compute_q_expected.clear()
-        self.loss.clear()
-        self.backward.clear()
-        self.optimize.clear()
-        self.soft_update.clear()
-        self.env_step.clear()
-        self.total_step.clear()
-        
-    def to_str(self):
-        print('\n-------TimeAnalysis Start-------')
-        print('memory_add', len(self.memory_add), np.sum(self.memory_add), np.mean(self.memory_add))
-        print('memory_sample', len(self.memory_sample), np.sum(self.memory_sample), np.mean(self.memory_sample))
-        print('memory_sample_random', len(self.memory_sample_random), np.sum(self.memory_sample_random), np.mean(self.memory_sample_random))
-        print('memory_sample_states', len(self.memory_sample_states), np.sum(self.memory_sample_states), np.mean(self.memory_sample_states))
-        print('memory_sample_actions', len(self.memory_sample_actions), np.sum(self.memory_sample_actions), np.mean(self.memory_sample_actions))
-        print('memory_sample_reward', len(self.memory_sample_reward), np.sum(self.memory_sample_reward), np.mean(self.memory_sample_reward))
-        print('memory_sample_next', len(self.memory_sample_next), np.sum(self.memory_sample_next), np.mean(self.memory_sample_next))
-        print('memory_sample_done', len(self.memory_sample_done), np.sum(self.memory_sample_done), np.mean(self.memory_sample_done))
-        print('act', len(self.act), np.sum(self.act), np.mean(self.act))
-        print('learn', len(self.learn), np.sum(self.learn), np.mean(self.learn))
-        print('compute_q_targets', len(self.compute_q_targets), np.sum(self.compute_q_targets), np.mean(self.compute_q_targets))
-        print('compute_q_expected', len(self.compute_q_expected), np.sum(self.compute_q_expected), np.mean(self.compute_q_expected))
-        print('loss', len(self.loss), np.sum(self.loss), np.mean(self.loss))
-        print('backward', len(self.backward), np.sum(self.backward), np.mean(self.backward))
-        print('optimize', len(self.optimize), np.sum(self.optimize), np.mean(self.optimize))
-        print('soft_update', len(self.soft_update), np.sum(self.soft_update), np.mean(self.soft_update))
-        print('env_step', len(self.env_step), np.sum(self.env_step), np.mean(self.env_step))
-        print('total_step', len(self.total_step), np.sum(self.total_step), np.mean(self.total_step))
-        print('-------TimeAnalysis End-------\n')
-
 class Agent():
     """Interacts with and learns from the environment."""
 
@@ -115,17 +52,23 @@ class Agent():
                 soft_tau=1e-3,
                 learning_rate=5e-4,
                 memory_prio_params=(False, 0, 0, 0), #(memory_prio_enabled, memory_prio_a, memory_prio_b0, memory_prio_b_step)
-                debug_mode=False
+                debug_mode=False,
+                time_analysis=None
                 ):
         """Initialize an Agent object.
-        
         Params
         ======
             state_size (int): dimension of each state
             action_size (int): dimension of each action
             seed (int): random seed
             layers_params ([int]): sizes of hidden layers in NN
-            double_dqn: enable double-dqn logic
+            double_dqn (bool): enable double-dqn logic
+            step_reward (int): extra reward to be added to environment reward
+            soft_tau (float): rate at which target NN converges towards local NN
+            learning_rate (float): optimizer learning rate
+            memory_prio_params (bool, float, float, float): (memory_prio_enabled, memory_prio_a, memory_prio_b0, memory_prio_b_step)
+            debug_mode (bool): enable debug logging
+            time_analysis (TimeAnalysis): contains timers stats
         """
         self.debug_mode = debug_mode
         
@@ -136,7 +79,7 @@ class Agent():
         self.soft_tau = soft_tau
         
         #perf analysis
-        self.time_analysis = TimeAnalysis()
+        self.time_analysis = time_analysis
     
         #set seeds
         random.seed(0)
@@ -165,12 +108,20 @@ class Agent():
         # Initialize time step (for updating every UPDATE_EVERY steps)
         self.t_step = 0
     
+    def start_analysis_timer(self, runType=RunType.unknown):
+        if self.time_analysis is not None:
+            self.time_analysis.start_timer(runType)
+
+    def end_analysis_timer(self, runType=RunType.unknown):
+        if self.time_analysis is not None:
+            self.time_analysis.end_timer(runType)
+
     def get_memory_prio_b(self):
         return self.memory.prio_b
     
     def step(self, state, action, reward, next_state, done):
         # Save experience in replay memory
-        memory_add_t = datetime.datetime.now()
+        self.start_analysis_timer(RunType.memory_add)
         td_error = 0.
         if self.memory_prio_enabled:
             with torch.no_grad():
@@ -179,34 +130,31 @@ class Agent():
                                                  torch.Tensor([[int(action)]]).to(torch.int64), 
                                                  torch.Tensor([[reward]]), 
                                                  torch.Tensor([next_state]), 
-                                                 torch.tensor([[float(done)]]))[0][0]
+                                                 torch.Tensor([[float(done)]]))[0][0]
 #             print('td_error', td_error)
         self.memory.add(state, action, reward+self.step_reward, next_state, done, td_error)
-        self.time_analysis.memory_add.append(datetime.datetime.now()-memory_add_t)
+        self.end_analysis_timer(RunType.memory_add)
         
         # Learn every UPDATE_EVERY time steps.
         self.t_step = (self.t_step + 1) % UPDATE_EVERY
         if self.t_step == 0:
             # If enough samples are available in memory, get random subset and learn
             if len(self.memory) > BATCH_SIZE:
-                memory_sample_t = datetime.datetime.now()
+                self.start_analysis_timer(RunType.memory_sample)
                 experiences, prio_weights = self.memory.sample(self.time_analysis)
-                self.time_analysis.memory_sample.append(datetime.datetime.now()-memory_sample_t)
+                self.end_analysis_timer(RunType.memory_sample)
                 
-                learn_t = datetime.datetime.now()
+                self.start_analysis_timer(RunType.agent_learn)
                 self.learn(experiences, GAMMA, prio_weights)
-                self.time_analysis.learn.append(datetime.datetime.now()-learn_t)
+                self.end_analysis_timer(RunType.agent_learn)
 
     def act(self, state, eps=0.):
         """Returns actions for given state as per current policy.
-        
         Params
         ======
             state (array_like): current state
             eps (float): epsilon, for epsilon-greedy action selection
-        """
-        act_t = datetime.datetime.now()
-        
+        """        
         state = torch.from_numpy(state).float().unsqueeze(0).to(device)
         self.qnetwork_local.eval()
         with torch.no_grad():
@@ -215,10 +163,8 @@ class Agent():
 
         # Epsilon-greedy action selection
         if random.random() > eps:
-            self.time_analysis.act.append(datetime.datetime.now()-act_t)
             return np.argmax(action_values.cpu().data.numpy())
         else:
-            self.time_analysis.act.append(datetime.datetime.now()-act_t)
             return random.choice(np.arange(self.action_size))
 
     def compute_td_error(self, gamma, states, actions, rewards, next_states, dones):
@@ -247,7 +193,6 @@ class Agent():
 
     def learn(self, experiences, gamma, prio_weights):
         """Update value parameters using given batch of experience tuples.
-
         Params
         ======
             experiences (Tuple[torch.Variable]): tuple of (s, a, r, s', done) tuples 
@@ -256,17 +201,17 @@ class Agent():
         states, actions, rewards, next_states, dones = experiences
 
         #1. Compute Q_targets
-        compute_q_targets_t = datetime.datetime.now()
+        self.start_analysis_timer(RunType.agent_q_targets)
         Q_targets = self.compute_q_targets(gamma, rewards, next_states, dones)
-        self.time_analysis.compute_q_targets.append(datetime.datetime.now()-compute_q_targets_t)
+        self.end_analysis_timer(RunType.agent_q_targets)
         
         #2. Compute Q_expected
-        compute_q_expected_t = datetime.datetime.now()
+        self.start_analysis_timer(RunType.agent_q_expected)
         Q_expected = self.compute_q_expected(states, actions)
-        self.time_analysis.compute_q_expected.append(datetime.datetime.now()-compute_q_expected_t)
+        self.end_analysis_timer(RunType.agent_q_expected)
         
         #3. Compute loss
-        loss_t = datetime.datetime.now()
+        self.start_analysis_timer(RunType.agent_loss)
         if self.memory_prio_enabled:
             loss_deprec = F.mse_loss(Q_expected, Q_targets)
             weights = torch.from_numpy(prio_weights[1]).unsqueeze(1).float()
@@ -277,23 +222,23 @@ class Agent():
                 print('learn_loss_weights', loss)
         else:
             loss = F.mse_loss(Q_expected, Q_targets)
-        self.time_analysis.loss.append(datetime.datetime.now()-loss_t)
+        self.end_analysis_timer(RunType.agent_loss)
                 
         #4. Minimize the loss
         self.optimizer.zero_grad()
         
-        backward_t = datetime.datetime.now()
+        self.start_analysis_timer(RunType.agent_backward)
         loss.backward()
-        self.time_analysis.backward.append(datetime.datetime.now()-backward_t)
+        self.end_analysis_timer(RunType.agent_backward)
         
-        optimize_t = datetime.datetime.now()
+        self.start_analysis_timer(RunType.agent_optimize)
         self.optimizer.step()
-        self.time_analysis.optimize.append(datetime.datetime.now()-optimize_t)
+        self.end_analysis_timer(RunType.agent_optimize)
             
         #5. update target network
-        soft_update_t = datetime.datetime.now()
+        self.start_analysis_timer(RunType.agent_soft_update)
         self.soft_update(self.qnetwork_local, self.qnetwork_target, self.soft_tau) 
-        self.time_analysis.soft_update.append(datetime.datetime.now()-soft_update_t)                    
+        self.end_analysis_timer(RunType.agent_soft_update)       
 
         #6. update td_errors in replay memory
         if self.memory_prio_enabled:
@@ -305,7 +250,6 @@ class Agent():
     def soft_update(self, local_model, target_model, tau):
         """Soft update model parameters.
         θ_target = τ*θ_local + (1 - τ)*θ_target
-
         Params
         ======
             local_model (PyTorch model): weights will be copied from
@@ -358,7 +302,10 @@ class MyRingBuffer:
 class ReplayBuffer:
     """Fixed-size buffer to store experience tuples."""
 
-    def __init__(self, action_size, buffer_size, batch_size, prio_a=0, prio_b0=0, prio_b_step=0, debug_mode=False):
+    def __init__(self, action_size, buffer_size, batch_size, 
+        prio_a=0, prio_b0=0, prio_b_step=0, 
+        debug_mode=False,
+        time_analysis=None):
         """Initialize a ReplayBuffer object.
 
         Params
@@ -369,6 +316,7 @@ class ReplayBuffer:
             seed (int): random seed
         """
         self.debug_mode = debug_mode
+        self.time_analysis = time_analysis
         
         self.action_size = action_size
         self.memory = deque(maxlen=buffer_size)  
@@ -380,10 +328,18 @@ class ReplayBuffer:
         self.prio_b_step = prio_b_step
         self.prio_b = prio_b0
         self.prio_epsilon = 0.01
-        self.prio_errors = MyRingBuffer(buffer_size, self.debug_mode) #deque(maxlen=buffer_size)
+        self.prio_errors = MyRingBuffer(buffer_size, self.debug_mode)
         
         self.np_memory_arange = None
     
+    def start_analysis_timer(self, runType=RunType.unknown):
+        if self.time_analysis is not None:
+            self.time_analysis.start_timer(runType)
+
+    def end_analysis_timer(self, runType=RunType.unknown):
+        if self.time_analysis is not None:
+            self.time_analysis.end_timer(runType)
+                
     def add(self, state, action, reward, next_state, done, td_error):
         """Add a new experience to memory."""
         e = self.experience(state, action, reward, next_state, done)
@@ -402,37 +358,23 @@ class ReplayBuffer:
         experiences_indices = np.empty(1)
         prio_weights = np.empty(1)
         if self.prio_a == 0:
-            memory_sample_random_t = datetime.datetime.now()
+            self.start_analysis_timer(RunType.memory_sample_random)
             experiences = random.sample(self.memory, k=self.batch_size)
-            time_analysis.memory_sample_random.append(datetime.datetime.now()-memory_sample_random_t)
+            self.end_analysis_timer(RunType.memory_sample_random)
         
-            memory_sample_states_t = datetime.datetime.now()
             states = torch.from_numpy(np.vstack([e.state for e in experiences if e is not None])).float().to(device)
-            time_analysis.memory_sample_states.append(datetime.datetime.now()-memory_sample_states_t)
-            
-            memory_sample_actions_t = datetime.datetime.now()
             actions = torch.from_numpy(np.vstack([e.action for e in experiences if e is not None])).long().to(device)
-            time_analysis.memory_sample_actions.append(datetime.datetime.now()-memory_sample_actions_t)
-            
-            memory_sample_reward_t = datetime.datetime.now()
             rewards = torch.from_numpy(np.vstack([e.reward for e in experiences if e is not None])).float().to(device)
-            time_analysis.memory_sample_reward.append(datetime.datetime.now()-memory_sample_reward_t)
-            
-            memory_sample_next_t = datetime.datetime.now()
             next_states = torch.from_numpy(np.vstack([e.next_state for e in experiences if e is not None])).float().to(device)
-            time_analysis.memory_sample_next.append(datetime.datetime.now()-memory_sample_next_t)
-            
-            memory_sample_done_t = datetime.datetime.now()
             dones = torch.from_numpy(np.vstack([e.done for e in experiences if e is not None]).astype(np.uint8)).float().to(device)
-            time_analysis.memory_sample_done.append(datetime.datetime.now()-memory_sample_done_t)
         else:
             if len(self.memory) == self.memory.maxlen:
                 if len(self.np_memory_arange) < self.memory.maxlen:
                     self.np_memory_arange = np.arange(self.memory.maxlen)
             else:
                 self.np_memory_arange = np.arange(len(self.memory))
-                
-            memory_sample_random_t = datetime.datetime.now()
+        
+            self.start_analysis_timer(RunType.memory_sample_random)
             prio_probas = self.prio_errors.array()/self.prio_errors.sum
             try:
                 experiences_indices = np.random.choice(len(self.memory), size=self.batch_size, p=prio_probas)
@@ -442,27 +384,13 @@ class ReplayBuffer:
                 prio_probas = self.prio_errors.array()/self.prio_errors.sum
                 experiences_indices = np.random.choice(len(self.memory), size=self.batch_size, p=prio_probas)
                 
-            time_analysis.memory_sample_random.append(datetime.datetime.now()-memory_sample_random_t)
+            self.end_analysis_timer(RunType.memory_sample_random)
             
-            memory_sample_states_t = datetime.datetime.now()
             states = torch.from_numpy(np.vstack([self.memory[i].state for i in experiences_indices])).float().to(device)
-            time_analysis.memory_sample_states.append(datetime.datetime.now()-memory_sample_states_t)
-            
-            memory_sample_actions_t = datetime.datetime.now()
             actions = torch.from_numpy(np.vstack([self.memory[i].action for i in experiences_indices])).long().to(device)
-            time_analysis.memory_sample_actions.append(datetime.datetime.now()-memory_sample_actions_t)
-            
-            memory_sample_reward_t = datetime.datetime.now()
             rewards = torch.from_numpy(np.vstack([self.memory[i].reward for i in experiences_indices])).float().to(device)
-            time_analysis.memory_sample_reward.append(datetime.datetime.now()-memory_sample_reward_t)
-            
-            memory_sample_next_t = datetime.datetime.now()
             next_states = torch.from_numpy(np.vstack([self.memory[i].next_state for i in experiences_indices])).float().to(device)
-            time_analysis.memory_sample_next.append(datetime.datetime.now()-memory_sample_next_t)
-            
-            memory_sample_done_t = datetime.datetime.now()
             dones = torch.from_numpy(np.vstack([self.memory[i].done for i in experiences_indices]).astype(np.uint8)).float().to(device)
-            time_analysis.memory_sample_done.append(datetime.datetime.now()-memory_sample_done_t)
             
             self.prio_b = min(self.prio_b + self.prio_b_step, 1.)
             prio_weights = (len(self.memory) * prio_probas[experiences_indices]) ** (-self.prio_b)
