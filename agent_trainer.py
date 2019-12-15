@@ -144,16 +144,16 @@ class AgentTrainer:
         action_size = brain.vector_action_space_size
         score = 0
         
-        if model_weights != '':
+        if model_weights != '' and model_weights != 'random':
             print('Load model weights', './ModelWeights/' + model_weights + '.pth')
             self.agent.qnetwork_local.load_state_dict(torch.load('./ModelWeights/' + model_weights + '.pth'))
 
         while True:
-            if model_weights=='random':
-                action = self.agent.act(state).astype(int)
-            else:
+            if model_weights == 'random':
                 action = np.random.randint(action_size)
-
+            else:
+                action = self.agent.act(state).astype(int)
+            
             env_info = self.env.step(action)[self.brain_name]
             next_state = env_info.vector_observations[0]
             reward = env_info.rewards[0]
