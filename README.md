@@ -1,27 +1,119 @@
 # Repo for Udacity Deep Reinforcement Learning Nanodegree
 
 ## Intro
-This repository contains a summary of my work towards graduating from the Udacity's Deep RL Nanodegree. It is structured based on the degree's syllabus and addresses different methods used to solve Reinforcement Learning problems:
+This repository is destined to contain a summary of my work towards graduating from the Udacity's Deep RL Nanodegree. It will be structured based on the degree's syllabus and will addresse different methods used to solve Reinforcement Learning problems:
+
+Right now, the only algorithm available is the DQN algo:
 - DQN (Deep Q-Learning) 
-  - implemented and calibrated while solving the OpenAI Gym environement "Lunar-Lander"
-  - used to solved the degree's first project, labelled "Navigation"
+  - I implemented and calibrated my algo while solving the OpenAI Gym environement "Lunar-Lander" (note that it's heavily inspiraed by the implementation presented in the course)
+  - I used it to solve the degree's first project, labelled "Navigation"
 
 ## Dependencies
-The content of this repository is heavily dependent on the below git repos:
-- Udacity Deep RL Nanodegree (add link)
-- OpenAI Gym project (add link)
-- Unity (add link)
+The content of this repository will be heavily dependent on the below git repos:
+- Udacity Deep RL Nanodegree: https://github.com/udacity/deep-reinforcement-learning
+- OpenAI Gym project: https://github.com/openai/gym
+- Unity: https://github.com/Unity-Technologies/ml-agents
+
+Also, please note that my repo is installed and used wihtin an Anaconda environment.
 
 ## Installation
+To be able to run my repo, you need to follow the below steps:
+```
 conda create --name myuda python=3.6  
 activate myuda  
 pip install unityagents  
-conda install -c pytorch pytorch  
+conda install -c pytorch pytorch
+```
 
-## DQN algo
-### Setup the training environment
-If not already done, follow the installation steps (add link) 
-### Implementation and calibration
-### Udacity Navigation project
+## Content
+### Use the training environment
+If not already done, follow the [installation steps](#installation)
+Then clone the repo and `cd UdacityRL`
+
+My goal is to have:
+- a set of different agents such as the dqn_agent present here
+- a set of different agent_trainer classes such as the one present here
+so that one is able to train/test any agent within several Gym or Unity environment
+
+For now, only the dqn algo is available in interaction with the Unity Banana Environment
+
+### DQN algo
+#### Implementation and calibration
+The implementation of the DQN algo was heavily inspired from the Udacity course.
+It implements the below features:
+- Simple DQN algo
+- Double DQN algo
+- Simple DQN algo with priority sampling
+
+The whole DQN algo can be found in the file dqn_agent.py
+The constructor to use if you want to instantiate an agent takes the below params:
+``` python
+state_size (int): dimension of each state
+action_size (int): dimension of each action
+layers_params ([int]): sizes of hidden fc layers in NN
+double_dqn (bool): enable double-dqn logic
+step_reward (int): extra reward to be added to environment reward
+soft_tau (float): rate at which target NN converges towards local NN
+learning_rate (float): optimizer learning rate
+memory_prio_params (bool, float, float, float): (memory_prio_enabled, memory_prio_a, memory_prio_b0, memory_prio_b_step)
+debug_mode (bool): enable debug logging
+time_analysis (TimeAnalysis): contains timers stats
+```
+
+An example would be:
+```python
+agent = dqn_agent.Agent(
+    state_size=37, 
+    action_size=4, 
+    layers_params=[64,64,64], 
+    double_dqn=False, 
+    step_reward=0,
+    soft_tau=1e-3,
+    learning_rate=5e-4,
+    memory_prio_params=(False, 0, 0, 0),
+    debug_mode=False,
+    time_analysis=None
+)
+```
+
+#### Udacity Navigation project
+The main file to use is navigation.py:
+```
+usage: navigation.py [-h] [--test_model TEST_MODEL]
+                     [--test_params TEST_PARAMS] [--train_params TRAIN_PARAMS]
+                     [--train_start_id TRAIN_START_ID]
+                     [--train_results_path TRAIN_RESULTS_PATH]
+                     [--train_debug TRAIN_DEBUG]
+                     mode
+
+Parameters for navigation project
+
+positional arguments:
+  mode
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --test_model TEST_MODEL
+  --test_params TEST_PARAMS
+  --train_params TRAIN_PARAMS
+  --train_start_id TRAIN_START_ID
+  --train_results_path TRAIN_RESULTS_PATH
+  --train_debug TRAIN_DEBUG
+```
+
+##### Example of training
+You can create a list of training configurations in json format like I did in ./Params/training_params.json:
+```
+python .\navigation.py 'train' --train_params='training_params.json'
+```
+
+All results will be stored in the file ./Results/results.csv and all models that solve the environment will be saved in the directory ./ModelWeights
+
+##### Example of testing
+You can test saved model weights (together with a corresponding agent params) against the environment:
+```
+python .\navigation.py 'test' --test_params='default_params.json' --test_model='simple_[64, 64, 64]_0.994'
+```
 
 ## License
+That repo has no license at the moment.

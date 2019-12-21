@@ -60,8 +60,7 @@ class Agent():
         ======
             state_size (int): dimension of each state
             action_size (int): dimension of each action
-            seed (int): random seed
-            layers_params ([int]): sizes of hidden layers in NN
+            layers_params ([int]): sizes of hidden fc layers in NN
             double_dqn (bool): enable double-dqn logic
             step_reward (int): extra reward to be added to environment reward
             soft_tau (float): rate at which target NN converges towards local NN
