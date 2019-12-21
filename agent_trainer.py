@@ -164,20 +164,3 @@ class AgentTrainer:
                 break
                 
             print("\rScore: {}".format(score), end='')
-
-    # def plot_scores(scores):
-        # import torch
-        # import numpy as np
-        # import matplotlib.pyplot as plt
-        # %matplotlib inline
-        # is_ipython = 'inline' in plt.get_backend()
-        # if is_ipython:
-        #     from IPython import display
-        # plt.ion()
-
-        # fig = plt.figure()
-        # ax = fig.add_subplot(111)
-        # plt.plot(np.arange(len(scores)), scores)
-        # plt.ylabel('Score')
-        # plt.xlabel('Episode #')
-        # plt.show()
