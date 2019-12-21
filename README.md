@@ -1,6 +1,6 @@
 # Repo for Udacity Deep Reinforcement Learning Nanodegree
 
-## Intro
+## I. Intro
 This repository is destined to contain a summary of my work towards graduating from the Udacity's Deep RL Nanodegree. It will be structured based on the degree's syllabus and will addresse different methods used to solve Reinforcement Learning problems:
 
 Right now, the only algorithm available is the DQN algo:
@@ -8,7 +8,7 @@ Right now, the only algorithm available is the DQN algo:
   - I implemented and calibrated my algo while solving the OpenAI Gym environement "Lunar-Lander" (note that it's heavily inspiraed by the implementation presented in the course)
   - I used it to solve the degree's first project, labelled "Navigation"
 
-## Dependencies
+## II. Dependencies
 The content of this repository will be heavily dependent on the below git repos:
 - Udacity Deep RL Nanodegree: https://github.com/udacity/deep-reinforcement-learning
 - OpenAI Gym project: https://github.com/openai/gym
@@ -16,7 +16,7 @@ The content of this repository will be heavily dependent on the below git repos:
 
 Also, please note that my repo is installed and used wihtin an Anaconda environment.
 
-## Installation
+## III. Installation
 To be able to run my repo, you need to follow the below steps:
 ```
 conda create --name myuda python=3.6  
@@ -25,8 +25,8 @@ pip install unityagents
 conda install -c pytorch pytorch
 ```
 
-## Content
-### Use the training environment
+## IV. Content
+### IV.1 Use the training environment
 If not already done, follow the [installation steps](#installation)
 Then clone the repo and `cd UdacityRL`
 
@@ -37,8 +37,8 @@ so that one is able to train/test any agent within several Gym or Unity environm
 
 For now, only the dqn algo is available in interaction with the Unity Banana Environment
 
-### DQN algo
-#### Implementation and calibration
+### IV.2 DQN algo
+#### IV.2.a Implementation and calibration
 The implementation of the DQN algo was heavily inspired from the Udacity course.
 It implements the below features:
 - Simple DQN algo
@@ -76,7 +76,7 @@ agent = dqn_agent.Agent(
 )
 ```
 
-#### Udacity Navigation project
+#### IV.2.b Udacity Navigation project
 The main file to use is navigation.py:
 ```
 usage: navigation.py [-h] [--test_model TEST_MODEL]
@@ -115,5 +115,12 @@ You can test saved model weights (together with a corresponding agent params) ag
 python .\navigation.py 'test' --test_params='default_params.json' --test_model='simple_[64, 64, 64]_0.994'
 ```
 
-## License
+##### Results
+My training results can be analyzed using the simple library ./Results/results_analysis.py
+
+You can find a report of my results in the Jupyter notebook ./Results/Results_report.ipynb
+- [Jupyter html view](./Results/Results_report.html) 
+- [Video of my model tested in the environment](http://TODO_youtube)
+
+## V. License
 That repo has no license at the moment.
