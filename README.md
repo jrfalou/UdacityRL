@@ -1,13 +1,15 @@
 # Repo for Udacity Deep Reinforcement Learning Nanodegree
 
 ## Intro
-This repository contains a summary of my work towards graduating from the Udacity's Deep RL Nanodegree. It is structured based on the degree's syllabus and addresses different methods used to solve Reinforcement Learning problems:
+This repository is destined to contain a summary of my work towards graduating from the Udacity's Deep RL Nanodegree. It will be structured based on the degree's syllabus and will addresse different methods used to solve Reinforcement Learning problems:
+
+Right now, the only algorithm available is the DQN algo:
 - DQN (Deep Q-Learning) 
-  - implemented and calibrated while solving the OpenAI Gym environement "Lunar-Lander"
-  - used to solved the degree's first project, labelled "Navigation"
+  - I implemented and calibrated my algo while solving the OpenAI Gym environement "Lunar-Lander" (note that it's heavily inspiraed by the implementation presented in the course)
+  - I used it to solve the degree's first project, labelled "Navigation"
 
 ## Dependencies
-The content of this repository is heavily dependent on the below git repos:
+The content of this repository will be heavily dependent on the below git repos:
 - Udacity Deep RL Nanodegree (add link)
 - OpenAI Gym project (add link)
 - Unity (add link)
