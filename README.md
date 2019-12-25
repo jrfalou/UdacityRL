@@ -23,6 +23,7 @@ conda create --name myuda python=3.6
 activate myuda  
 pip install unityagents  
 conda install -c pytorch pytorch
+conda install pandas #for results analysis
 ```
 
 ## IV. Content
