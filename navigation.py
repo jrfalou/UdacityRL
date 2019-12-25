@@ -26,9 +26,9 @@ if __name__ == "__main__":
             params_file = open('./Params/' + args.test_params, 'r')
             test_params = json.loads(params_file.read())
             params_file.close()
-
+            
             env = UnityEnvironment(file_name="./Banana_Windows_x86_64/Banana.exe")
-            agent_trainer = AgentTrainer(env=env, params=test_params[0])
+            agent_trainer = AgentTrainer(env=env, params=test_params['params'][0])
             agent_trainer.test(model_weights=args.test_model)
         elif args.mode == 'train':
             params_file = open('./Params/' + args.train_params, 'r')
@@ -39,7 +39,7 @@ if __name__ == "__main__":
                 file_name="./Banana_Windows_x86_64/Banana.exe",
                 no_graphics=True
             )
-            for training_params in training_params['training_params']:
+            for training_params in training_params['params']:
                 if(training_params['id'] < int(args.train_start_id)):
                     continue
 

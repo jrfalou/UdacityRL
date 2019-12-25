@@ -23,7 +23,7 @@ class AgentTrainer:
         # brain we will be controlling from Python.
         self.env = env
         self.trainer_id = params['id']
-        self.trainer_params = params['training']
+        self.trainer_params = params['training'] if 'training' in params else None
         self.agent_params = params['agent']
         self.brain_name = self.env.brain_names[0]
         self.results_path = results_path
