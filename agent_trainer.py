@@ -164,3 +164,6 @@ class AgentTrainer:
                 break
                 
             print("\rScore: {}".format(score), end='')
+        
+        if self.results_path != '':    
+            self.write_score_to_file('test', score)
