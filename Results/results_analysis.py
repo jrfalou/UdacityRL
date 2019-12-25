@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 
 episodes_list = np.arange(100, 1001, 100)
 
-def get_results_df(tops_nb=5):
-    results_df = pd.read_csv('results.csv', names=['model','episode','score'])
+def get_results_df(results_file, tops_nb=5):
+    results_df = pd.read_csv(results_file, names=['model','episode','score'])
     solved_df = results_df[['model','episode']].groupby('model').max()
     tops_df = solved_df.sort_values(by=['episode']).iloc[:tops_nb]
 
@@ -52,7 +52,7 @@ def plot_results_per_model_type(results_df):
 
 if __name__ == "__main__":
     #get results
-    results_df, solved_df, tops_df = get_results_df(tops_nb=5)
+    results_df, solved_df, tops_df = get_results_df(result_file='train_results.csv', tops_nb=5)
 
     #build winners plot
     plot_results(results_df, tops_df.index)
