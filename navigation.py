@@ -41,7 +41,7 @@ if __name__ == "__main__":
                 )
                 test_model = args.test_model
                 if test_model == 'auto':
-                    test_model = testing_params['agent']['model_tag'] + '.pth'
+                    test_model = testing_params['agent']['model_tag']
                 agent_trainer.test(model_weights=test_model)
         elif args.mode == 'train':
             params_file = open('./Params/' + args.train_params, 'r')
