@@ -132,7 +132,7 @@ python .\navigation.py 'test' --test_params='default_params.json' --test_model='
 My training results can be analyzed using the simple library ./Results/results_analysis.py
 
 You can find a report of my results in the Jupyter notebook ./Results/Results_report.ipynb
-- [Jupyter html view](./Results/Results_report.html) 
+- [Jupyter pdf view](./Results/Results_report.pdf) 
 - [Video of my model tested in the environment](./Results/best_model.mp4))
 
 ## V. License
