@@ -135,7 +135,7 @@ class AgentTrainer:
         results_file.write(','.join([str(self.trainer_id), self.agent_params['model_tag'].replace(',', ';'), str(i_episode), str(mean_score)]) + '\n')
         results_file.close()
                 
-    def test(self, model_weights=''):
+    def test(self, model_weights='', test_id='test'):
         brain = self.env.brains[self.brain_name]
 
         # reset the environment and get current state
@@ -166,4 +166,4 @@ class AgentTrainer:
             print("\rScore: {}".format(score), end='')
         
         if self.results_path != '':    
-            self.write_score_to_file('test', score)
+            self.write_score_to_file(test_id, score)

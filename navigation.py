@@ -12,10 +12,13 @@ from time_analysis import TimeAnalysis
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Parameters for navigation project')
     parser.add_argument('mode')
+    
     parser.add_argument('--test_model', dest='test_model', default='random')
     parser.add_argument('--test_params', dest='test_params', default='default_params.json')
     parser.add_argument('--test_no_display', dest='test_no_display', action='store_true')
     parser.add_argument('--test_results_path', dest='test_results_path', default='test_results.csv')
+    parser.add_argument('--test_episodes', dest='test_episodes', default=1)
+    
     parser.add_argument('--train_params', dest='train_params', default='default_params.json')
     parser.add_argument('--train_start_id', dest='train_start_id', default=0)
     parser.add_argument('--train_results_path', dest='train_results_path', default='train_results.csv')
@@ -34,15 +37,16 @@ if __name__ == "__main__":
                 no_graphics=args.test_no_display
             )
             for testing_params in test_params['params']:
-                agent_trainer = AgentTrainer(
-                    env=env, 
-                    params=testing_params,
-                    results_path='./Results/' + args.test_results_path
-                )
-                test_model = args.test_model
-                if test_model == 'auto':
-                    test_model = testing_params['agent']['model_tag']
-                agent_trainer.test(model_weights=test_model)
+                for i in range(int(args.test_episodes)):
+                    agent_trainer = AgentTrainer(
+                        env=env, 
+                        params=testing_params,
+                        results_path='./Results/' + args.test_results_path if args.test_results_path != '' else ''
+                    )
+                    test_model = args.test_model
+                    if test_model == 'auto':
+                        test_model = testing_params['agent']['model_tag']
+                    agent_trainer.test(model_weights=test_model, test_id=i+1)
         elif args.mode == 'train':
             params_file = open('./Params/' + args.train_params, 'r')
             train_params = json.loads(params_file.read())
@@ -57,7 +61,6 @@ if __name__ == "__main__":
                     continue
 
                 time_analysis = TimeAnalysis()
-                # env.seed = 0
                 agent_trainer = AgentTrainer(
                     env=env, 
                     params=training_params, 
