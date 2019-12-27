@@ -125,7 +125,7 @@ All results will be stored in the file ./Results/results.csv and all models that
 ##### Example of testing
 You can test saved model weights (together with a corresponding agent params) against the environment:
 ```
-python .\navigation.py 'test' --test_params='default_params.json' --test_model='simple_[64, 64, 64]_0.994'
+python .\navigation.py 'test' --test_params='default_params.json' --test_model='simple_[64, 64, 64]_0.994' --test_results_path=''
 ```
 
 ##### Results
