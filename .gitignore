@@ -1,5 +1,6 @@
 # Banana environment files
 Banana_Windows_x86_64*
+Banana_Linux*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
