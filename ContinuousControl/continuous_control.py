@@ -1,12 +1,21 @@
 #external imports
-from unityagents import UnityEnvironment
-import numpy as np
 import argparse
 import json
+import os
+from unityagents import UnityEnvironment
 
 #local imports
 from agent_trainer import AgentTrainer
 from time_analysis import TimeAnalysis
+
+def create_results_folders(filepath):
+    path_parts = filepath.split('/')
+    if len(path_parts) > 1:
+        for p in range(len(path_parts)-1):
+            full_path = './Results/' + '/'.join(path_parts[:-(p+1)])
+            print(full_path)
+            if not os.path.exists(full_path):
+                os.mkdir(full_path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Parameters for continuous control project')
@@ -22,6 +31,7 @@ if __name__ == "__main__":
     parser.add_argument('--train_start_id', dest='train_start_id', default=0)
     parser.add_argument('--train_results_path', dest='train_results_path', default='train_results.csv')
     parser.add_argument('--train_debug', dest='train_debug', default=False)
+    parser.add_argument('--train_worker_id', dest='train_worker_id', default=0)
     args = parser.parse_args()
     
     env = None
@@ -51,9 +61,12 @@ if __name__ == "__main__":
             train_params = json.loads(params_file.read())
             params_file.close()
 
+            create_results_folders(args.train_results_path)
+
             env = UnityEnvironment(
                 file_name='./Reacher_Linux_1/Reacher_Linux/Reacher.x86_64', #"./Reacher_Windows_x86_64/Reacher.exe",
-                no_graphics=True
+                no_graphics=True,
+                worker_id=int(args.train_worker_id)
             )
             for training_params in train_params['params']:
                 if(training_params['id'] < int(args.train_start_id)):
@@ -61,8 +74,8 @@ if __name__ == "__main__":
 
                 time_analysis = TimeAnalysis()
                 agent_trainer = AgentTrainer(
-                    env=env, 
-                    params=training_params, 
+                    env=env,
+                    params=training_params,
                     results_path='./Results/' + args.train_results_path,
                     debug_mode=args.train_debug,
                     time_analysis=time_analysis

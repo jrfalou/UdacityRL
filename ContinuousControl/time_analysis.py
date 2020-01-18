@@ -17,6 +17,8 @@ class RunType(Enum):
     agent_soft_update = 12
     env_step = 13
     training_step = 14
+    agent_actor_step = 15
+    agent_critic_step = 16
 
 class TimeAnalysis:
     def __init__(self):

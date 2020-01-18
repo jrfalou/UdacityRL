@@ -1,11 +1,11 @@
-import torch
-import numpy as np
 from collections import deque
+import numpy as np
+import torch
 
 #internal imports
 from ddpg_agent import Agent
-from time_analysis import TimeAnalysis
 from time_analysis import RunType
+from utils import get_layers_from_string
 
 class AgentTrainer:
     '''
@@ -18,8 +18,8 @@ class AgentTrainer:
     time_analysis (TimeAnalysis): contains timers stats
     '''
     def __init__(self, env, params, results_path='', debug_mode=False, time_analysis=None):
-        #Environments contain brains which are responsible for deciding the actions of their 
-        # associated agents. Here we check for the first brain available, and set it as the default 
+        #Environments contain brains which are responsible for deciding the actions of their
+        # associated agents. Here we check for the first brain available, and set it as the default
         # brain we will be controlling from Python.
         self.env = env
         self.trainer_id = params['id']
@@ -29,13 +29,13 @@ class AgentTrainer:
         self.results_path = results_path
         self.debug_mode = debug_mode
         self.time_analysis = time_analysis
-        
+
         # reset the environment and print details
         env_info = self.env.reset(train_mode=True)[self.brain_name]
         state = env_info.vector_observations[0]
         state_size = len(state)
         action_size = self.env.brains[self.brain_name].vector_action_space_size
-        
+
         if self.debug_mode:
             print('Number of agents:', len(env_info.agents))
             print('Number of actions:', action_size)
@@ -44,23 +44,31 @@ class AgentTrainer:
             print('States have length:', state_size)
 
         #create agent
-        self.agent = Agent( state_size=state_size, 
+        self.agent = Agent(state_size=state_size,
                             action_size=action_size,
-                            # layers_params=self.agent_params['nn_layers'],
+                            actor_layers_params=
+                                get_layers_from_string(self.agent_params['actor_hidden_layers']),
+                            critic_layers_params=
+                                get_layers_from_string(self.agent_params['critic_hidden_layers']),
                             soft_tau=self.agent_params['soft_tau'],
-                            batch_size=128,
+                            batch_size=self.agent_params['batch_size'],
                             learning_rate_actor=self.agent_params['learning_rate_actor'],
                             learning_rate_critic=self.agent_params['learning_rate_critic'],
                             weight_decay_critic=0,
+                            noise_params=(
+                                self.agent_params['noise_theta'],
+                                self.agent_params['noise_sigma']
+                            ),
+                            learn_step_nb=self.agent_params['learn_step_nb'],
                             # memory_prio_params=(
-                            #     self.agent_params['memory_prio_params']['memory_prio_enabled'],
-                            #     self.agent_params['memory_prio_params']['memory_prio_a'],
-                            #     self.agent_params['memory_prio_params']['memory_prio_b0'],
-                            #     self.agent_params['memory_prio_params']['memory_prio_b_step']
+                            #    self.agent_params['memory_prio_params']['memory_prio_enabled'],
+                            #    self.agent_params['memory_prio_params']['memory_prio_a'],
+                            #    self.agent_params['memory_prio_params']['memory_prio_b0'],
+                            #    self.agent_params['memory_prio_params']['memory_prio_b_step']
                             # ),
                             debug_mode=self.agent_params['debug_mode'],
                             time_analysis=self.time_analysis)
-            
+
     def train(self):
         print('Train model_id', self.trainer_id)
         scores = []
@@ -78,7 +86,7 @@ class AgentTrainer:
             score = 0
             for _ in range(self.trainer_params['max_t']):
                 self.time_analysis.start_timer(RunType.training_step)
-                
+
                 self.time_analysis.start_timer(RunType.agent_act)
                 # action = self.agent.act(state, eps).astype(int)
                 action = self.agent.act(state)
@@ -90,13 +98,13 @@ class AgentTrainer:
                 reward = env_info.rewards[0]
                 done = env_info.local_done[0]
                 self.time_analysis.end_timer(RunType.env_step)
-                
+
                 self.agent.step(state, action, reward, next_state, done)
                 state = next_state
                 score += reward
                 self.time_analysis.end_timer(RunType.training_step)
                 if done:
-                    break 
+                    break
 
             #post-processing of latest episode
             scores_window.append(score)
@@ -105,7 +113,7 @@ class AgentTrainer:
             results_file_tmp = open(self.results_path.replace('.csv', '_tmp.csv'), 'a')
             results_file_tmp.write(','.join([str(self.trainer_id), self.agent_params['model_tag'].replace(',', ';'), str(i_episode), str(score)]) + '\n')
             results_file_tmp.close()
-            
+
             # print('\rEpisode {}\tAverage Score: {:.2f}\teps: {:.5f}'.format(i_episode, np.mean(scores_window), eps), end="")
             print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)), end="")
 
@@ -113,7 +121,7 @@ class AgentTrainer:
             if i_episode % scores_window.maxlen == 0:
                 if self.debug_mode:
                     print('\n' + self.time_analysis.to_str())
-                
+
                 if i_episode > scores_window.maxlen:
                     if np.mean(scores_window) < prev_scores_window_avg:
                         consecutive_worse_count += 1
