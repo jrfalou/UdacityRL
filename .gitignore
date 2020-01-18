@@ -1,9 +1,10 @@
 # Banana environment files
-Banana_Windows_x86_64*
-Banana_Linux*
+Banana_Windows_x86_64/
+Banana_Linux/
 
 # Reacher environment files
-Reacher_Linux*
+Reacher_Linux_1/
+Reacher_Linux_20/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
