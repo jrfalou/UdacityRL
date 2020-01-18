@@ -32,7 +32,7 @@ if __name__ == "__main__":
             params_file.close()
             
             env = UnityEnvironment(
-                file_name='./Reacher_Linux/Reacher.x86_64', #"./Reacher_Windows_x86_64/Reacher.exe",
+                file_name='./Reacher_Linux_1/Reacher_Linux/Reacher.x86_64', #"./Reacher_Windows_x86_64/Reacher.exe",
                 no_graphics=args.test_no_display
             )
             for testing_params in test_params['params']:
@@ -52,7 +52,7 @@ if __name__ == "__main__":
             params_file.close()
 
             env = UnityEnvironment(
-                file_name='./Reacher_Linux/Reacher.x86_64', #"./Reacher_Windows_x86_64/Reacher.exe",
+                file_name='./Reacher_Linux_1/Reacher_Linux/Reacher.x86_64', #"./Reacher_Windows_x86_64/Reacher.exe",
                 no_graphics=True
             )
             for training_params in train_params['params']:

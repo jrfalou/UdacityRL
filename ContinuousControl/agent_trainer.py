@@ -102,6 +102,9 @@ class AgentTrainer:
             scores_window.append(score)
             scores.append(score)
             # eps = max(self.trainer_params['eps_end'], self.trainer_params['eps_decay']*eps)
+            results_file_tmp = open(self.results_path.replace('.csv', '_tmp.csv'), 'a')
+            results_file_tmp.write(','.join([str(self.trainer_id), self.agent_params['model_tag'].replace(',', ';'), str(i_episode), str(score)]) + '\n')
+            results_file_tmp.close()
             
             # print('\rEpisode {}\tAverage Score: {:.2f}\teps: {:.5f}'.format(i_episode, np.mean(scores_window), eps), end="")
             print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_window)), end="")

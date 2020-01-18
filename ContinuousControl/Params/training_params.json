@@ -1,0 +1,364 @@
+{
+    "params": [
+        {
+            "agent": {
+                "batch_size": 10,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "10",
+                "soft_tau": 0.001
+            },
+            "id": 0,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 20,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "20",
+                "soft_tau": 0.001
+            },
+            "id": 1,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 30,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "30",
+                "soft_tau": 0.001
+            },
+            "id": 2,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 40,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "40",
+                "soft_tau": 0.001
+            },
+            "id": 3,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 50,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "50",
+                "soft_tau": 0.001
+            },
+            "id": 4,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 60,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "60",
+                "soft_tau": 0.001
+            },
+            "id": 5,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 70,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "70",
+                "soft_tau": 0.001
+            },
+            "id": 6,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 80,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "80",
+                "soft_tau": 0.001
+            },
+            "id": 7,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 90,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "90",
+                "soft_tau": 0.001
+            },
+            "id": 8,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 100,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "100",
+                "soft_tau": 0.001
+            },
+            "id": 9,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 110,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "110",
+                "soft_tau": 0.001
+            },
+            "id": 10,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 120,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "120",
+                "soft_tau": 0.001
+            },
+            "id": 11,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 130,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "130",
+                "soft_tau": 0.001
+            },
+            "id": 12,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 140,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "140",
+                "soft_tau": 0.001
+            },
+            "id": 13,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 150,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "150",
+                "soft_tau": 0.001
+            },
+            "id": 14,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 160,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "160",
+                "soft_tau": 0.001
+            },
+            "id": 15,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 170,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "170",
+                "soft_tau": 0.001
+            },
+            "id": 16,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 180,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "180",
+                "soft_tau": 0.001
+            },
+            "id": 17,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 190,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "190",
+                "soft_tau": 0.001
+            },
+            "id": 18,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        },
+        {
+            "agent": {
+                "batch_size": 200,
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "200",
+                "soft_tau": 0.001
+            },
+            "id": 19,
+            "training": {
+                "max_consec_worse": 1000,
+                "max_score": 30,
+                "max_t": 1000,
+                "max_total_worse": 1000,
+                "n_episodes": 300
+            }
+        }
+    ]
+}
