@@ -71,7 +71,9 @@ if __name__ == "__main__":
             for training_params in train_params['params']:
                 if(training_params['id'] < int(args.train_start_id)):
                     continue
-
+                
+                print(args)
+                print('Train id', training_params['id'])
                 time_analysis = TimeAnalysis()
                 agent_trainer = AgentTrainer(
                     env=env,

@@ -23,7 +23,7 @@ def generate(n_episodes,
                     out_dict.append({})
                     out_dict[params_id]['id'] = params_id
                     out_dict[params_id]['training'] = {}
-                    out_dict[params_id]['training']['n_episodes'] = n_episodes
+                    out_dict[params_id]['training']['n_episodes'] = int(n_episodes)
                     out_dict[params_id]['training']['max_t'] = 10000
                     out_dict[params_id]['training']['max_score'] = 30
                     # out_dict[params_id]['training']['eps_start'] = 1.

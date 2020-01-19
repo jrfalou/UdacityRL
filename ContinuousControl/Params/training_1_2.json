@@ -1,0 +1,143 @@
+{
+    "desc": "Namespace(actor_hidden_layers='[(400,300)]', actor_lr='0.0001', batch_sizes='[250]', critic_hidden_layers='[(400,300)]', critic_lr='0.001', learn_step_nbs='[1,4,8,12,16,20]', name='training_1_2', nb_episodes=1000, noise_sigma='0.2', noise_theta='0.15')",
+    "params": [
+        {
+            "agent": {
+                "actor_hidden_layers": "(400, 300)",
+                "batch_size": 250,
+                "critic_hidden_layers": "(400, 300)",
+                "debug_mode": false,
+                "learn_step_nb": 1,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "250_1_0.0001_0.001_0.15_0.2_(400, 300)_(400, 300)",
+                "noise_sigma": 0.2,
+                "noise_theta": 0.15,
+                "soft_tau": 0.001
+            },
+            "id": 0,
+            "training": {
+                "max_consec_worse": 10000,
+                "max_score": 30,
+                "max_t": 10000,
+                "max_total_worse": 10000,
+                "n_episodes": 1000
+            }
+        },
+        {
+            "agent": {
+                "actor_hidden_layers": "(400, 300)",
+                "batch_size": 250,
+                "critic_hidden_layers": "(400, 300)",
+                "debug_mode": false,
+                "learn_step_nb": 4,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "250_4_0.0001_0.001_0.15_0.2_(400, 300)_(400, 300)",
+                "noise_sigma": 0.2,
+                "noise_theta": 0.15,
+                "soft_tau": 0.001
+            },
+            "id": 1,
+            "training": {
+                "max_consec_worse": 10000,
+                "max_score": 30,
+                "max_t": 10000,
+                "max_total_worse": 10000,
+                "n_episodes": 1000
+            }
+        },
+        {
+            "agent": {
+                "actor_hidden_layers": "(400, 300)",
+                "batch_size": 250,
+                "critic_hidden_layers": "(400, 300)",
+                "debug_mode": false,
+                "learn_step_nb": 8,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "250_8_0.0001_0.001_0.15_0.2_(400, 300)_(400, 300)",
+                "noise_sigma": 0.2,
+                "noise_theta": 0.15,
+                "soft_tau": 0.001
+            },
+            "id": 2,
+            "training": {
+                "max_consec_worse": 10000,
+                "max_score": 30,
+                "max_t": 10000,
+                "max_total_worse": 10000,
+                "n_episodes": 1000
+            }
+        },
+        {
+            "agent": {
+                "actor_hidden_layers": "(400, 300)",
+                "batch_size": 250,
+                "critic_hidden_layers": "(400, 300)",
+                "debug_mode": false,
+                "learn_step_nb": 12,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "250_12_0.0001_0.001_0.15_0.2_(400, 300)_(400, 300)",
+                "noise_sigma": 0.2,
+                "noise_theta": 0.15,
+                "soft_tau": 0.001
+            },
+            "id": 3,
+            "training": {
+                "max_consec_worse": 10000,
+                "max_score": 30,
+                "max_t": 10000,
+                "max_total_worse": 10000,
+                "n_episodes": 1000
+            }
+        },
+        {
+            "agent": {
+                "actor_hidden_layers": "(400, 300)",
+                "batch_size": 250,
+                "critic_hidden_layers": "(400, 300)",
+                "debug_mode": false,
+                "learn_step_nb": 16,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "250_16_0.0001_0.001_0.15_0.2_(400, 300)_(400, 300)",
+                "noise_sigma": 0.2,
+                "noise_theta": 0.15,
+                "soft_tau": 0.001
+            },
+            "id": 4,
+            "training": {
+                "max_consec_worse": 10000,
+                "max_score": 30,
+                "max_t": 10000,
+                "max_total_worse": 10000,
+                "n_episodes": 1000
+            }
+        },
+        {
+            "agent": {
+                "actor_hidden_layers": "(400, 300)",
+                "batch_size": 250,
+                "critic_hidden_layers": "(400, 300)",
+                "debug_mode": false,
+                "learn_step_nb": 20,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "model_tag": "250_20_0.0001_0.001_0.15_0.2_(400, 300)_(400, 300)",
+                "noise_sigma": 0.2,
+                "noise_theta": 0.15,
+                "soft_tau": 0.001
+            },
+            "id": 5,
+            "training": {
+                "max_consec_worse": 10000,
+                "max_score": 30,
+                "max_t": 10000,
+                "max_total_worse": 10000,
+                "n_episodes": 1000
+            }
+        }
+    ]
+}
