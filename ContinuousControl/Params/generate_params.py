@@ -78,7 +78,7 @@ if __name__ == "__main__":
     parser.add_argument('--critic_lr', dest='critic_lr', default=0.001)
     args = parser.parse_args()
 
-    out_dict = generate(n_episodes=args.nb_episodes,
+    params_dict = generate(n_episodes=args.nb_episodes,
                         actor_lr=float(args.actor_lr),
                         critic_lr=float(args.critic_lr),
                         actor_hidden_layers=get_layers_list_from_string(args.actor_hidden_layers),
@@ -88,8 +88,8 @@ if __name__ == "__main__":
                         batch_sizes=get_list_from_string(args.batch_sizes),
                         learn_step_nbs=get_list_from_string(args.learn_step_nbs))
 
-    out_dict.update({'desc': str(args)})
+    params_dict.update({'desc': str(args)})
 
     out_file = open('./' + args.name + '.json', 'w')
-    out_file.write(json.dumps(out_dict, indent=4, sort_keys=True))
+    out_file.write(json.dumps(params_dict, indent=4, sort_keys=True))
     out_file.close()
