@@ -42,7 +42,17 @@ class Agent():
         ======
             state_size (int): dimension of each state
             action_size (int): dimension of each action
-            random_seed (int): random seed
+            actor_layers_params (int, int): number of nodes for each hidden layer of actor NN
+            critic_layers_params (int, int): number of nodes for each hidden layer of critic NN
+            soft_tau (float): soft-update parameter for target networks
+            batch_size (int): number of steps sampled at each learning step
+            learning_rate_actor (float): learning rate for actor NN
+            learning_rate_critic (float): learning rate for critic NN
+            weight_decay_critic (float): weight decay for the critic NN
+            noise_params (float, float): (theta, sigma) values for the Ornstein-Uhlenbeck process
+            learn_step_nb (int): number of steps between each learning phase
+            debug_mode (bool)
+            time_analysis (TimeAnalysis): used to profile agent
         """
         self.debug_mode = debug_mode
         
@@ -92,8 +102,8 @@ class Agent():
         self.noise = OUNoise(self.action_size, mu=0, theta=noise_params[0], sigma=noise_params[1])
 
         # Replay memory
-        self.memory = ReplayBuffer(self.action_size, 
-                                   BUFFER_SIZE, 
+        self.memory = ReplayBuffer(self.action_size,
+                                   BUFFER_SIZE,
                                    self.batch_size,
                                    self.time_analysis)
 

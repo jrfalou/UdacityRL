@@ -110,7 +110,7 @@ class AgentTrainer:
             scores_window.append(score)
             scores.append(score)
             # eps = max(self.trainer_params['eps_end'], self.trainer_params['eps_decay']*eps)
-            results_file_tmp = open(self.results_path.replace('.csv', '_tmp.csv'), 'a')
+            results_file_tmp = open(self.results_path.replace('.csv', '_step.csv'), 'a')
             results_file_tmp.write(','.join([str(self.trainer_id), self.agent_params['model_tag'].replace(',', ';'), str(i_episode), str(score)]) + '\n')
             results_file_tmp.close()
 
@@ -167,9 +167,9 @@ class AgentTrainer:
         
         while True:
             if model_weights == 'random':
-                action = np.random.randint(action_size)
+                action = np.random.uniform(low=-1, high=1, size=action_size)
             else:
-                action = self.agent.act(state).astype(int)
+                action = self.agent.act(state)
             
             env_info = self.env.step(action)[self.brain_name]
             next_state = env_info.vector_observations[0]
@@ -180,7 +180,7 @@ class AgentTrainer:
             if done:
                 break
                 
-            print("\rScore: {}".format(score), end='')
+            print("\rScore: {}".format(round(score, 2)), end='')
         
         if self.results_path != '':    
             self.write_score_to_file(test_id, score)
