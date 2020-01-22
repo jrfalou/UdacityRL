@@ -7,6 +7,8 @@ from ddpg_agent import Agent
 from time_analysis import RunType
 from utils import get_layers_from_string
 
+DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 class AgentTrainer:
     '''
     AgentTrainer:
@@ -162,8 +164,14 @@ class AgentTrainer:
         
         if model_weights != '' and model_weights != 'random':
             print('Load model weights', './ModelWeights/' + model_weights + '.pth')
-            self.agent.actor_local.load_state_dict(torch.load('./ModelWeights/' + model_weights + '_actor.pth'))
-            self.agent.critic_local.load_state_dict(torch.load('./ModelWeights/' + model_weights + '_critic.pth'))
+            self.agent.actor_local.load_state_dict(
+                torch.load(
+                    './ModelWeights/' + model_weights + '_actor.pth',
+                    map_location=DEVICE))
+            self.agent.critic_local.load_state_dict(
+                torch.load(
+                    './ModelWeights/' + model_weights + '_critic.pth',
+                    map_location=DEVICE))
         
         while True:
             if model_weights == 'random':

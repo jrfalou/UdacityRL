@@ -2,6 +2,7 @@
 import argparse
 import json
 import os
+import platform
 from unityagents import UnityEnvironment
 
 #local imports
@@ -36,13 +37,18 @@ if __name__ == "__main__":
     
     env = None
     try:
+        if platform.system() == 'Linux':
+            file_name = './Reacher_Linux_1/Reacher_Linux/Reacher.x86_64'
+        else:
+            file_name = './Reacher_Windows_x86_64/Reacher.exe'
+
         if args.mode == 'test':
             params_file = open('./Params/' + args.test_params, 'r')
             test_params = json.loads(params_file.read())
             params_file.close()
-            
+
             env = UnityEnvironment(
-                file_name='./Reacher_Linux_1/Reacher_Linux/Reacher.x86_64', #"./Reacher_Windows_x86_64/Reacher.exe",
+                file_name=file_name,
                 no_graphics=args.test_no_display
             )
             for testing_params in test_params['params']:
@@ -64,7 +70,7 @@ if __name__ == "__main__":
             create_results_folders(args.train_results_path)
 
             env = UnityEnvironment(
-                file_name='./Reacher_Linux_1/Reacher_Linux/Reacher.x86_64', #"./Reacher_Windows_x86_64/Reacher.exe",
+                file_name=file_name,
                 no_graphics=True,
                 worker_id=int(args.train_worker_id)
             )

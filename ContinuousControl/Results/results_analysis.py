@@ -1,4 +1,5 @@
 import glob
+import platform
 import pandas as pd
 
 MODEL_TAGS = ['batch_size', 
@@ -9,6 +10,8 @@ MODEL_TAGS = ['batch_size',
             'noise_sigma', 
             'actor_nn', 
             'critic_nn']
+
+DIR_SEP = '/' if platform.system() == 'Linux' else '\\'
 
 def get_training_results():
     results_dirs = glob.glob('./training_*/')
@@ -22,12 +25,12 @@ def get_training_results():
         df = pd.read_csv(
             results_dir + 'train_results.csv',
             names=['model_id', 'model_tag', 'episode', 'score'])
-        df_step['training'] = results_dir.split('/')[-2]
-        df['training'] = results_dir.split('/')[-2]
+        df_step['training'] = results_dir.split(DIR_SEP)[-2]
+        df['training'] = results_dir.split(DIR_SEP)[-2]
         df_results_step_list.append(df_step)
         df_results_list.append(df)
         
-        training_batch = results_dir.replace('/', '').replace('.', '')
+        training_batch = results_dir.replace(DIR_SEP, '').replace('.', '')
         df_details = df.copy()
         df_details['batch'] = training_batch
         for i in range(len(MODEL_TAGS)):
