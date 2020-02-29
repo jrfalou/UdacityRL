@@ -38,7 +38,7 @@ if __name__ == "__main__":
     env = None
     try:
         if platform.system() == 'Linux':
-            file_name = './Reacher_Linux_1/Reacher_Linux/Reacher.x86_64'
+            file_name = './Reacher_Linux_1/Reacher.x86_64'
         else:
             file_name = './Reacher_Windows_x86_64/Reacher.exe'
 
