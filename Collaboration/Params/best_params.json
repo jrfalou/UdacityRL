@@ -1,0 +1,42 @@
+{
+    "desc": "Namespace(actor_hidden_layers='[(128, 128)]', actor_lr=0.0001, batch_sizes='[50,100,150,200]', critic_hidden_layers='[(128, 128)]', critic_lr=0.001, learn_step_nbs='[1,4,8,12,16,20]', name='trainings_3', nb_episodes='2000', noise_sigma=0, noise_theta=0)",
+    "params": [
+        {
+            "agent": {
+                "agents": [
+                    {
+                        "actor_hidden_layers": "(128, 128)",
+                        "critic_hidden_layers": "(128, 128)",
+                        "debug_mode": false,
+                        "learning_rate_actor": 0.0001,
+                        "learning_rate_critic": 0.001,
+                        "noise_sigma": 0.0,
+                        "noise_theta": 0.0,
+                        "soft_tau": 0.001
+                    },
+                    {
+                        "actor_hidden_layers": "(128, 128)",
+                        "critic_hidden_layers": "(128, 128)",
+                        "debug_mode": false,
+                        "learning_rate_actor": 0.0001,
+                        "learning_rate_critic": 0.001,
+                        "noise_sigma": 0.0,
+                        "noise_theta": 0.0,
+                        "soft_tau": 0.001
+                    }
+                ],
+                "batch_size": 200,
+                "learn_step_nb": 1,
+                "model_tag": "200_1_0.0001_0.001_0.0_0.0_(128, 128)_(128, 128)"
+            },
+            "id": 18,
+            "training": {
+                "max_consec_worse": 10000,
+                "max_score": 1.4,
+                "max_t": 10000,
+                "max_total_worse": 10000,
+                "n_episodes": 5000
+            }
+        }
+    ]
+}

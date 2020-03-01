@@ -7,6 +7,9 @@ Reacher_Linux_1/
 Reacher_Linux_20/
 Reacher_Windows_x86_64/
 
+#Tennis environment files
+Tennis_Linux/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
