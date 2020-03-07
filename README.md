@@ -9,7 +9,9 @@ Right now, there are two algorithms available:
   - I used it to solve the degree's first project, labelled "Navigation"
 - DDPG (Deep Deterministic Policy Gradient):
   - I implemented and calibrated my algo while solving the OpenAI Gym environment "Pendulum-v0" (note that it's heavily inspired by the implementation presented in the course)
-  - I used it to solved the degree's second project, labelled "Continuous Control"
+  - I used it to solve the degree's second project, labelled "Continuous Control"
+- Multi-DDPG:
+  - I used it to solve the degree's third project, labelled "Collaboration and Competition"
 
 ## II. Dependencies
 The content of this repository will be heavily dependent on the below git repos:
@@ -42,6 +44,7 @@ so that one is able to train/test any agent within several Gym or Unity environm
 For now, are available:
 - the DQN algo in interaction with the Unity Banana Environment
 - the DDPG algo in interaction with the Unity Reacher Environment
+- a multi-DDPG algo in interation with the Unity Tennis Environment
 
 ### IV.2 DQN algo
 #### IV.2.a Implementation and calibration
@@ -245,5 +248,120 @@ You can find a report of my results in the Jupyter notebook ./ContinuousControl/
 - [Jupyter pdf view](./ContinuousControl/Results/Results_report.pdf) 
 - [Video of my model tested in the environment](./ContinuousControl/Results/best_model.mp4))
 
-## V. License
+### IV.4 Multi-DDPG algo
+#### IV.4.a Implementation and calibration
+The implementation of the Multi-DDPG algo was heavily inspired from the Udacity course.
+It implements the below features:
+- Ornstein-Uhlenbeck process to improve exploration
+
+The whole Multi-DDPG algo can be found in the file mddpg_agent.py
+The constructor to use if you want to instantiate an agent takes the below params:
+``` python
+state_size (int): dimension of each state
+action_size (int): dimension of each action
+agent_params (dict): parameters for the Multi-DDPG agent and for each DDPG agent
+time_analysis (TimeAnalysis): used to profile agent
+```
+
+An example would be:
+```python
+agent = ddpg_agent.Agent(
+    state_size=8, 
+    action_size=2, 
+    agent_params={
+        "agents": [
+            {
+                "actor_hidden_layers": "(128, 128)",
+                "critic_hidden_layers": "(128, 128)",
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "noise_sigma": 0.0,
+                "noise_theta": 0.0,
+                "soft_tau": 0.001
+            },
+            {
+                "actor_hidden_layers": "(128, 128)",
+                "critic_hidden_layers": "(128, 128)",
+                "debug_mode": false,
+                "learning_rate_actor": 0.0001,
+                "learning_rate_critic": 0.001,
+                "noise_sigma": 0.0,
+                "noise_theta": 0.0,
+                "soft_tau": 0.001
+            }
+        ],
+        "batch_size": 200,
+        "learn_step_nb": 1,
+        "model_tag": "200_1_0.0001_0.001_0.0_0.0_(128, 128)_(128, 128)"
+    }, 
+    time_analysis=None
+)
+```
+
+#### IV.4.b Udacity Collaboration project
+##### Environment description
+In this environment, two agents control rackets to bounce a ball over a net. If an agent hits the ball over the net, it receives a reward of +0.1. If an agent lets a ball hit the ground or hits the ball out of bounds, it receives a reward of -0.01. Thus, the goal of each agent is to keep the ball in play.
+
+The observation space consists of 8 variables corresponding to the position and velocity of the ball and racket. Each agent receives its own, local observation. Two continuous actions are available, corresponding to movement toward (or away from) the net, and jumping.
+
+The task is episodic, and in order to solve the environment, your agents must get an average score of +0.5 (over 100 consecutive episodes, after taking the maximum over both agents).
+
+##### Solution implementation
+The main file to use is collaboration.py:
+```
+usage: collaboration.py [-h] [--test_model TEST_MODEL]
+                        [--test_params TEST_PARAMS] [--test_no_display]
+                        [--test_results_path TEST_RESULTS_PATH]
+                        [--test_episodes TEST_EPISODES]
+                        [--train_params TRAIN_PARAMS]
+                        [--train_start_id TRAIN_START_ID]
+                        [--train_results_path TRAIN_RESULTS_PATH]
+                        [--train_debug TRAIN_DEBUG]
+                        [--train_worker_id TRAIN_WORKER_ID]
+                        mode
+
+Parameters for collaboration project
+
+positional arguments:
+  mode
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --test_model TEST_MODEL
+  --test_params TEST_PARAMS
+  --test_no_display
+  --test_results_path TEST_RESULTS_PATH
+  --test_episodes TEST_EPISODES
+  --train_params TRAIN_PARAMS
+  --train_start_id TRAIN_START_ID
+  --train_results_path TRAIN_RESULTS_PATH
+  --train_debug TRAIN_DEBUG
+  --train_worker_id TRAIN_WORKER_ID
+```
+
+##### Example of training
+You can create a list of training configurations in json format like I did in ./Collaboration/Params/trainings_1.json:
+```
+python ./Collaboration/collaboration.py  train --train_params=trainings_1.json --train_results_path=train_results_1.csv
+```
+
+All results will be stored in the directory ./Collaboration/Results/ and all models that solve the environment will be saved in the directory ./Collaboration/ModelWeights
+
+##### Example of testing
+You can test saved model weights (together with a corresponding agent params) against the environment:
+```
+python ./Collaboration/collaboration.py test --test_params best_params.json --test_model auto --test_results_path ''
+```
+
+##### Results
+My training results can be analyzed using the simple library ./Collaboration/Results/results_analysis.py
+
+You can find a report of my results in the Jupyter notebook ./Collaboration/Results/Results_report.ipynb
+- [Jupyter pdf view](./Collaboration/Results/Results_report.pdf)
+
+## V. Next steps
+I need to refactor the code and reorganize the repo to avoid duplication of code
+
+## VI. License
 That repo has no license at the moment.
